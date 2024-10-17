@@ -1,7 +1,10 @@
 <script setup>
 import jobsData from "@/jobs.json"
-import { ref, defineProps } from "vue";
+import { ref, defineProps, onMounted, reactive } from "vue";
 import JobListing from "@/components/JobListing.vue";
+import { RouterLink } from "vue-router";
+import axios from "axios";
+// import PulseLoader from "vue-spinner"
 
 defineProps({
     limit: Number,
@@ -10,8 +13,23 @@ defineProps({
         default: false
     }
 })
+const state = reactive({
+    jobs: [],
+    isLoading: true
+})
+const jobs = ref([])
+onMounted(async () => {
+    try {
+        const response = await axios.get("/api/jobs");
+        // jobs.value = response.data;
+        state.jobs = response.data;
 
-const jobs = ref(jobsData)
+    } catch (error) {
+        console.error("Error while fetching the jobs");
+    } finally {
+        state.isLoading = false
+    }
+})
 </script>
 
 <template>
@@ -20,16 +38,23 @@ const jobs = ref(jobsData)
             <h2 class="text-3xl font-bold text-green-500 mb-6 text-center">
                 Browse Jobs
             </h2>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <JobListing v-for="(job, index) in jobs.slice(0, limit || jobs.length)" :key="job.id" :job="job">
+            <!-- show loading spinner while state is true  -->
+            <div v-if="state.isLoading" class="text-center text-gray-600 py-6">
+                <!-- <PulseLoader /> -->
+                loading
+            </div>
+            <div v-else class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <JobListing v-for="(job, index) in state.jobs.slice(0, limit || state.jobs.length)" :key="job.id"
+                    :job="job">
                     {{ job.title }}
                 </JobListing>
             </div>
         </div>
     </section>
     <section class="m-auto max-w-lg my-10 px-6" v-if="showButton">
-        <a href="/jobs" class="block bg-black text-white text-center py-4 px-6 rounded-xl hover:bg-gray-700">View
-            All Jobs</a>
+        <RouterLink to="/jobs" class="block bg-black text-white text-center py-4 px-6 rounded-xl hover:bg-gray-700">
+            View All Jobs
+        </RouterLink>
     </section>
 
 </template>
