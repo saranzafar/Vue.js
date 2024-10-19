@@ -7,7 +7,7 @@ import AddJobView from "@/components/views/AddJobView.vue";
 import EditJobView from "@/components/views/EditJobView.vue";
 
 const router = createRouter({
-    history: createWebHistory(import.meta.env.BASE_URL || "/"),
+    history: createWebHistory("/"),
     routes: [
         {
             path: "/",

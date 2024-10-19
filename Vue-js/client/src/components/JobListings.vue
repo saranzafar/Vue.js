@@ -1,5 +1,5 @@
 <script setup>
-import jobsData from "@/jobs.json"
+// import jobsData from "@/jobs.json"
 import { ref, defineProps, onMounted, reactive } from "vue";
 import JobListing from "@/components/JobListing.vue";
 import { RouterLink } from "vue-router";
@@ -21,6 +21,8 @@ const jobs = ref([])
 onMounted(async () => {
     try {
         const response = await axios.get("/api/jobs");
+        console.log("Geting responst: ", response.data);
+
         // jobs.value = response.data;
         state.jobs = response.data;
 
